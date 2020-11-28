@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useTheme, Headline } from "react-native-paper";
-import { View, StyleSheet, LobGOx, LogBox } from "react-native";
+import { View, StyleSheet, LogBox } from "react-native";
 import CountdownCircle from "react-native-countdown-circle";
 
 const Countdown = ({ navigation }) => {

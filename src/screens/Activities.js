@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Fab } from "../components/Fab";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
-import { Headline, Card, Button, Title } from "react-native-paper";
+import { StyleSheet, View, Dimensions } from "react-native";
+import { Headline, Card, Title } from "react-native-paper";
 
 const activities = [
   {
@@ -29,18 +29,21 @@ const activities = [
 ];
 
 const Activities = ({ navigation }) => {
-  const { height, width } = Dimensions.get("window");
+  const { width } = Dimensions.get("window");
   return (
     <View style={styles.container}>
       <View style={{ height: 150, justifyContent: "center", marginLeft: 16 }}>
-        <Headline>Activities</Headline>
+        <Headline>Aktywności</Headline>
       </View>
       <View style={{ alignItems: "center" }}>
         {activities.map((activity) => (
           <Card elevation={1} style={{ marginBottom: 16, width: 0.9 * width }}>
             <Card.Title title="Bieg" subtitle={activity.date} />
-            <Card.Content>
-              <Title>Card title</Title>
+            <Card.Content
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Title style={{}}>{activity.duration}</Title>
+              <Title>{activity.distance} km</Title>
             </Card.Content>
           </Card>
         ))}

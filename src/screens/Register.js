@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     height: 200,
   },
   header: {
-    fontSize: 28,
+    fontSize: 28, // refactor or fix
   },
   form: {
     width: "80%",
@@ -61,11 +61,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginBottom: 24,
   },
-  button: {
-    borderRadius: 12,
-  },
   buttonText: {
-    fontFamily: "SFProDisplay-Medium",
+    fontFamily: "SFProDisplay-Medium", // refactor/fix
   },
 });
 
