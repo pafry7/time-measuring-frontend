@@ -1,14 +1,15 @@
 import * as SecureStore from "expo-secure-store";
 
-const API_URL = "TEST"
+const API_URL = "TEST";
 
-function client(endpoint, { body, ...customConfig } = {}) {
-  const userData = await SecureStore.getItemAsync("userData")
-  const { userId } = userData;
+async function client(endpoint, { body, ...customConfig } = {}) {
+  const userData = await SecureStore.getItemAsync("userData");
+
+  console.log("body", body);
 
   const headers = { "content-type": "application/json" };
-  if (token) {
-    headers.Authorization = `Bearer ${userId}`;
+  if (userData) {
+    headers.Authorization = `Bearer ${userData.userId}`;
   }
 
   const config = {
@@ -28,9 +29,13 @@ function client(endpoint, { body, ...customConfig } = {}) {
 
   switch (endpoint) {
     case "register":
-     response = {userId: "123", name: "Patryk Fryda", email:"patrykfryda@o2.pl"} 
+      response = {
+        userId: "123",
+        name: "Patryk Fryda",
+        email: "patrykfryda@o2.pl",
+      };
     default:
-      response = "error"
+      response = "error";
   }
 
   return response;
@@ -47,4 +52,4 @@ function client(endpoint, { body, ...customConfig } = {}) {
   //   });
 }
 
-export {client}
+export { client };

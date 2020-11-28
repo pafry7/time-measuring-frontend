@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as SplashScreen from "expo-splash-screen";
 import * as SecureStore from "expo-secure-store";
+import { client } from "../utils/client";
 
 const secureStoreKey = "userData";
 const AuthContext = React.createContext();
@@ -10,25 +11,42 @@ function AuthProvider(props) {
   const [isLoading, setIsLoading] = React.useState(true);
 
   async function bootstrapAppData() {
-    await SplashScreen.preventAutoHideAsync();
-    const userData = await SecureStore.getItemAsync(secureStoreKey);
+    try {
+      await SplashScreen.preventAutoHideAsync();
+      const userData = await SecureStore.getItemAsync(secureStoreKey);
 
-    if (userData) {
-      setUser(useData);
+      if (userData) {
+        setUser(userData);
+      }
+      setIsLoading(false);
+      await SplashScreen.hideAsync();
+    } catch (e) {
+      console.log("error", e);
     }
-    setIsLoading(false);
-    await SplashScreen.hideAsync();
   }
   React.useEffect(() => {
     bootstrapAppData();
   }, []);
 
   const register = React.useCallback(
-    (form) => register(form).then((user) => setUser(user)),
+    (form) =>
+      client("register", { body: form }).then(async (user) => {
+        await SecureStore.setItemAsync("userData", user);
+        setUser(user);
+      }),
     [setUser]
   );
 
-  const value = React.useMemo(() => ({ user, register }), [register, user]);
+  const logout = React.useCallback(async () => {
+    await SecureStore.deleteItemAsync("userData");
+    setUser(null);
+  }, [setUser]);
+
+  const value = React.useMemo(() => ({ user, register, logout }), [
+    register,
+    user,
+    logout,
+  ]);
 
   if (isLoading) {
     return null;
