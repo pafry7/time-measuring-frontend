@@ -1,13 +1,12 @@
 import * as React from "react";
-import { Fab } from "../components/Fab";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
+import { Fab } from "../components/Fab";
 
-const Activities = ({ navigation }) => {
+const Menu = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text>Activities</Text>
-      <StatusBar style="auto" />
+      <Text>Menu</Text>
       <Fab onPress={() => navigation.push("Run", { screen: "Countdown" })} />
     </View>
   );
@@ -15,10 +14,10 @@ const Activities = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F6FA",
+    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },
 });
 
-export { Activities };
+export { Menu };

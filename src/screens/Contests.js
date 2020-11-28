@@ -1,12 +1,12 @@
 import * as React from "react";
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
+import { Fab } from "../components/Fab";
 
-const Contests = () => {
+const Contests = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text>Contests</Text>
-      <StatusBar style="auto" />
+      <Fab onPress={() => navigation.push("Run", { screen: "Countdown" })} />
     </View>
   );
 };

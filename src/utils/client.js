@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 
-const API_URL = "TEST";
+const API_URL = "us-central1-timemeasuring-b8740.cloudfunctions.net";
 
 async function client(endpoint, { body, ...customConfig } = {}) {
   const userData = await SecureStore.getItemAsync("userData");
@@ -24,32 +24,18 @@ async function client(endpoint, { body, ...customConfig } = {}) {
   if (body) {
     config.body = JSON.stringify(body);
   }
+  return { userId: "xD", dada: "dada" };
 
-  let response;
+  // return fetch(`${API_URL}/${endpoint}`, config).then(async (response) => {
+  //   const data = await response.json();
+  //   console.log(data);
 
-  switch (endpoint) {
-    case "register":
-      response = {
-        userId: "123",
-        name: "Patryk Fryda",
-        email: "patrykfryda@o2.pl",
-      };
-    default:
-      response = "error";
-  }
-
-  return response;
-
-  // return fetch(`${API_URL}/${endpoint}`, config)
-  //   .then(async (response) => {
-  //     const data = await response.json();
-
-  //     if (response.ok) {
-  //       return data;
-  //     } else {
-  //       return Promise.reject(data);
-  //     }
-  //   });
+  //   if (response.ok) {
+  //     return data;
+  //   } else {
+  //     return Promise.reject(data);
+  //   }
+  // });
 }
 
 export { client };

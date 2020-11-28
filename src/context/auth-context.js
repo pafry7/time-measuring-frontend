@@ -1,7 +1,8 @@
 import * as React from "react";
-import * as SplashScreen from "expo-splash-screen";
+// import * as SplashScreen from "expo-splash-screen";
 import * as SecureStore from "expo-secure-store";
 import { client } from "../utils/client";
+import { Text } from "react-native";
 
 const secureStoreKey = "userData";
 const AuthContext = React.createContext();
@@ -9,17 +10,20 @@ const AuthContext = React.createContext();
 function AuthProvider(props) {
   const [user, setUser] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
+  console.log("in auth provider", user, isLoading);
 
   async function bootstrapAppData() {
     try {
-      await SplashScreen.preventAutoHideAsync();
+      // await SplashScreen.preventAutoHideAsync();
       const userData = await SecureStore.getItemAsync(secureStoreKey);
 
       if (userData) {
-        setUser(userData);
+        const user = await JSON.parse(userData);
+        setUser(user);
       }
+      console.log(userData);
       setIsLoading(false);
-      await SplashScreen.hideAsync();
+      // await SplashScreen.hideAsync();
     } catch (e) {
       console.log("error", e);
     }
@@ -29,9 +33,10 @@ function AuthProvider(props) {
   }, []);
 
   const register = React.useCallback(
-    (form) =>
-      client("register", { body: form }).then(async (user) => {
-        await SecureStore.setItemAsync("userData", user);
+    (email) =>
+      client("hello", { body: { email } }).then(async (user) => {
+        console.log(user, "user");
+        await SecureStore.setItemAsync("userData", JSON.stringify(user));
         setUser(user);
       }),
     [setUser]
@@ -49,7 +54,7 @@ function AuthProvider(props) {
   ]);
 
   if (isLoading) {
-    return null;
+    return <Text>loading...</Text>;
   }
 
   return <AuthContext.Provider value={value} {...props} />;

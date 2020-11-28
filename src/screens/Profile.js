@@ -1,17 +1,19 @@
 import * as React from "react";
 import { StatusBar } from "expo-status-bar";
-import { Button, StyleSheet, Text, View } from "react-native";
-import * as SecureStore from "expo-secure-store";
+import { StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../context/auth-context";
+import { Button, useTheme } from "react-native-paper";
 
 const Profile = () => {
   const { logout } = useAuth();
+  const { colors } = useTheme();
 
   return (
     <View style={styles.container}>
       <Text>Profile</Text>
-      <Button onPress={logout} title="delete jwt"></Button>
-      <StatusBar style="auto" />
+      <Button mode="contained" onPress={logout}>
+        Delete jwt
+      </Button>
     </View>
   );
 };

@@ -1,12 +1,38 @@
 import * as React from "react";
 import { AuthProvider } from "./src/context/auth-context";
+import { StatusBar } from "expo-status-bar";
 import { Router } from "./src/navigation";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AppLoading } from "expo";
+import { Provider as PaperProvider } from "react-native-paper";
+import { useFonts } from "expo-font";
+import { theme } from "./src/common/theme";
+import { LocationProvider } from "./src/context/location-context.js";
 
 export default function App() {
-  console.log("I am in app");
+  console.log("in app");
+  const [loaded] = useFonts({
+    "SFProDisplay-Bold": require("./assets/fonts/SF-Pro-Display-Bold.otf"),
+    "SFProDisplay-Semibold": require("./assets/fonts/SF-Pro-Display-Semibold.otf"),
+    "SFProDisplay-Regular": require("./assets/fonts/SF-Pro-Display-Regular.otf"),
+    "SFProDisplay-Medium": require("./assets/fonts/SF-Pro-Display-Medium.otf"),
+  });
+  console.log("loaded", loaded);
+
+  if (!loaded) {
+    return <AppLoading />;
+  }
+
   return (
     <AuthProvider>
-      <Router />
+      <LocationProvider>
+        <PaperProvider theme={theme}>
+          <SafeAreaProvider>
+            <Router />
+            <StatusBar style="dark" />
+          </SafeAreaProvider>
+        </PaperProvider>
+      </LocationProvider>
     </AuthProvider>
   );
 }
