@@ -2,7 +2,6 @@ import * as React from "react";
 import { AuthProvider } from "./src/context/auth-context";
 import { StatusBar } from "expo-status-bar";
 import { Router } from "./src/navigation";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AppLoading } from "expo";
 import { Provider as PaperProvider } from "react-native-paper";
 import { useFonts } from "expo-font";
@@ -27,10 +26,8 @@ export default function App() {
     <AuthProvider>
       <LocationProvider>
         <PaperProvider theme={theme}>
-          <SafeAreaProvider>
-            <Router />
-            <StatusBar style="dark" />
-          </SafeAreaProvider>
+          <Router />
+          <StatusBar style="dark" />
         </PaperProvider>
       </LocationProvider>
     </AuthProvider>

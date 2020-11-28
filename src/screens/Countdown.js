@@ -1,15 +1,21 @@
 import * as React from "react";
 import { useTheme, Headline } from "react-native-paper";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, LobGOx, LogBox } from "react-native";
 import CountdownCircle from "react-native-countdown-circle";
 
 const Countdown = ({ navigation }) => {
   const { colors } = useTheme();
+
+  //for now
+  React.useEffect(() => {
+    LogBox.ignoreLogs(["Animated: `useNativeDriver`"]);
+  }, []);
+
   return (
     <View style={styles.container}>
       <Headline style={styles.headline}>Gotowy ?</Headline>
       <CountdownCircle
-        seconds={10}
+        seconds={5}
         radius={50}
         borderWidth={8}
         bgColor="white"

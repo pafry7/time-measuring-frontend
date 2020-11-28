@@ -1,12 +1,17 @@
 import * as React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Fab } from "../components/Fab";
+import { Button, useTheme } from "react-native-paper";
 
-const Menu = ({ navigation }) => {
+const RunSummary = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text>Menu</Text>
-      <Fab onPress={() => navigation.push("Run", { screen: "Countdown" })} />
+      <Text>Run summary</Text>
+      <Button
+        mode="contained"
+        onPress={() => navigation.push("Home", { screen: "Menu" })}
+      >
+        Wróc do menu
+      </Button>
     </View>
   );
 };
@@ -19,4 +24,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { Menu };
+export { RunSummary };

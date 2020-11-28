@@ -7,6 +7,7 @@ import { Profile } from "../screens/Profile";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Countdown } from "../screens/Countdown";
+import { RunSummary } from "../screens/RunSummary";
 import { RunningScreen } from "../screens/RunningScreen";
 
 const Tab = createBottomTabNavigator();
@@ -15,7 +16,7 @@ const Stack = createStackNavigator();
 const HomeTabs = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Dashboard"
+      initialRouteName="Menu"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size, focused }) => {
           let iconName = "";
@@ -39,8 +40,8 @@ const HomeTabs = () => {
         inactiveTintColor: "gray",
       }}
     >
-      <Tab.Screen name="Profil" component={Profile} />
       <Tab.Screen name="Menu" component={Menu} />
+      <Tab.Screen name="Profil" component={Profile} />
       <Tab.Screen name="Aktywności" component={Activities} />
       <Tab.Screen name="Zawody" component={Contests} />
     </Tab.Navigator>
@@ -52,6 +53,7 @@ const HomeStack = () => {
       <Stack.Screen name="Home" component={HomeTabs} />
       <Stack.Screen name="Run" component={Countdown} />
       <Stack.Screen name="RunningScreen" component={RunningScreen} />
+      <Stack.Screen name="RunSummary" component={RunSummary} />
     </Stack.Navigator>
   );
 };

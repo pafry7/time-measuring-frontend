@@ -147,7 +147,7 @@ const RunningScreen = ({ navigation }) => {
           </View>
         </View>
         <Button
-          onPress={() => console.log("xD")}
+          onPress={() => navigation.push("RunSummary")}
           mode="contained"
           color="red"
           contentStyle={{ height: 50 }}
@@ -165,6 +165,7 @@ const RunningScreen = ({ navigation }) => {
       <View style={styles.container}>
         <MapView
           ref={mapRef}
+          showsUserLocation
           style={styles.mapStyle}
           initialRegion={{
             latitude: region.latitude,
