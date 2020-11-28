@@ -14,7 +14,6 @@ function AuthProvider(props) {
 
   async function bootstrapAppData() {
     try {
-      // await SplashScreen.preventAutoHideAsync();
       const userData = await SecureStore.getItemAsync(secureStoreKey);
 
       if (userData) {
@@ -23,7 +22,6 @@ function AuthProvider(props) {
       }
       console.log(userData);
       setIsLoading(false);
-      // await SplashScreen.hideAsync();
     } catch (e) {
       console.log("error", e);
     }
@@ -33,9 +31,8 @@ function AuthProvider(props) {
   }, []);
 
   const register = React.useCallback(
-    (email) =>
-      client("hello", { body: { email } }).then(async (user) => {
-        console.log(user, "user");
+    (mail) =>
+      client("hello", { body: { mail } }).then(async (user) => {
         await SecureStore.setItemAsync("userData", JSON.stringify(user));
         setUser(user);
       }),

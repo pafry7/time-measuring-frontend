@@ -7,7 +7,18 @@ import { DismissKeyboard } from "../components/DismissKeyboard";
 
 const Register = () => {
   const [email, setEmail] = React.useState();
+  const [loading, setLoading] = React.useState();
   const { register, user } = useAuth();
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      await register(email);
+    } catch (e) {
+    } finally {
+      setLoading(false);
+    }
+  };
 
   console.log("user in register", user);
   return (
@@ -27,9 +38,10 @@ const Register = () => {
           ></TextInput>
           <Button
             mode="contained"
+            loading={loading}
             labelStyle={styles.buttonText}
             contentStyle={{ width: "100%", height: 50 }}
-            onPress={() => register(email)}
+            onPress={() => handleSubmit()}
             theme={{ roundness: 12 }}
           >
             Login

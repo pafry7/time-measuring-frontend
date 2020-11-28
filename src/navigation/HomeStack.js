@@ -4,6 +4,7 @@ import { Contests } from "../screens/Contests";
 import { Activities } from "../screens/Activities";
 import { Menu } from "../screens/Menu";
 import { Profile } from "../screens/Profile";
+import { ChooseActivity } from "../screens/ChooseActivity";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Countdown } from "../screens/Countdown";
@@ -51,7 +52,8 @@ const HomeStack = () => {
   return (
     <Stack.Navigator headerMode={null}>
       <Stack.Screen name="Home" component={HomeTabs} />
-      <Stack.Screen name="Run" component={Countdown} />
+      <Stack.Screen name="ChooseActivity" component={ChooseActivity} />
+      <Stack.Screen name="Countdown" component={Countdown} />
       <Stack.Screen name="RunningScreen" component={RunningScreen} />
       <Stack.Screen name="RunSummary" component={RunSummary} />
     </Stack.Navigator>

@@ -1,6 +1,9 @@
 import * as React from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { Fab } from "../components/Fab";
+import { useAuth } from "../context/auth-context";
+import { Headline, Card, Title, Content } from "react-native-paper";
+import { client } from "../utils/client";
 
 const zawody = [
   {
@@ -20,6 +23,26 @@ const zawody = [
 ];
 
 const Contests = ({ navigation }) => {
+  const [data, setData] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const { user } = useAuth();
+
+  React.useEffect(() => {
+    setLoading(true);
+    const fetchFunction = async () => {
+      const data = await client(`users/${user.id}/challenges`);
+      console.log("challanges", data);
+      setData(data);
+    };
+    try {
+      fetchFunction();
+    } catch (e) {
+      console.log(e, "error");
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
   const { height, width } = Dimensions.get("window");
   return (
     <View style={styles.container}>
@@ -33,16 +56,16 @@ const Contests = ({ navigation }) => {
               title={zaw.name}
               subtitle={`${zaw.start}-${zaw.koniec}`}
             />
-            <Card.Content
+            {/* <Card.Content
               style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Title style={{}}>{activity.duration}</Title>
-              <Title>{activity.distance} km</Title>
-            </Card.Content>
+            > */}
+            {/* <Title style={{}}>{zaw.duration}</Title>
+              <Title>{activity.distance} km</Title> */}
+            {/* </Card.Content> */}
           </Card>
         ))}
       </View>
-      <Fab onPress={() => navigation.push("Run", { screen: "Countdown" })} />
+      <Fab navigation={navigation} />
     </View>
   );
 };

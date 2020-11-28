@@ -15,7 +15,7 @@ const Countdown = ({ navigation }) => {
     <View style={styles.container}>
       <Headline style={styles.headline}>Gotowy ?</Headline>
       <CountdownCircle
-        seconds={5}
+        seconds={1}
         radius={50}
         borderWidth={8}
         bgColor="white"

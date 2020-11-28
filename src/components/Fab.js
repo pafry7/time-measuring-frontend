@@ -2,8 +2,12 @@ import * as React from "react";
 import { StyleSheet } from "react-native";
 import { FAB } from "react-native-paper";
 
-const Fab = ({ onPress }) => (
-  <FAB style={styles.fab} icon="plus" onPress={() => onPress()} />
+const Fab = ({ navigation }) => (
+  <FAB
+    style={styles.fab}
+    icon="plus"
+    onPress={() => navigation.push("ChooseActivity")}
+  />
 );
 
 const styles = StyleSheet.create({

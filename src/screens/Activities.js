@@ -1,54 +1,69 @@
 import * as React from "react";
 import { Fab } from "../components/Fab";
-import { StyleSheet, View, Dimensions } from "react-native";
+import { StyleSheet, View, Dimensions, ActivityIndicator } from "react-native";
 import { Headline, Card, Title } from "react-native-paper";
-
-const activities = [
-  {
-    distance: 100,
-    id: 1,
-    verified: false,
-    duration: "30 minut",
-    date: "28.12.2020",
-    locations: [
-      { longitude: 50, latitude: 19 },
-      { longitude: 50, latitude: 19 },
-    ],
-  },
-  {
-    distance: 50,
-    id: 1,
-    date: "27.12.2020",
-    verified: false,
-    duration: "1,5 godziny",
-    locations: [
-      { longitude: 50, latitude: 19 },
-      { longitude: 50, latitude: 19 },
-    ],
-  },
-];
+import { useAuth } from "../context/auth-context";
+import { client } from "../utils/client";
 
 const Activities = ({ navigation }) => {
+  const [data, setData] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const { user } = useAuth();
+  console.log(loading);
+
   const { width } = Dimensions.get("window");
+
+  React.useEffect(() => {
+    setLoading(true);
+    const fetchFunction = async () => {
+      console.log(user.id, "userid");
+      const data = await client(`users/${user.id}/approaches`);
+      console.log(data);
+      setData(data);
+    };
+    try {
+      fetchFunction();
+    } catch (e) {
+      console.error("error", e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={{ height: 150, justifyContent: "center", marginLeft: 16 }}>
         <Headline>Aktywności</Headline>
       </View>
       <View style={{ alignItems: "center" }}>
-        {activities.map((activity) => (
-          <Card elevation={1} style={{ marginBottom: 16, width: 0.9 * width }}>
-            <Card.Title title="Bieg" subtitle={activity.date} />
-            <Card.Content
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
+        {loading ? (
+          <ActivityIndicator />
+        ) : data ? (
+          data.map((activity) => (
+            <Card
+              elevation={1}
+              style={{ marginBottom: 16, width: 0.9 * width }}
             >
-              <Title style={{}}>{activity.duration}</Title>
-              <Title>{activity.distance} km</Title>
-            </Card.Content>
-          </Card>
-        ))}
+              <Card.Title
+                title="Bieg"
+                subtitle={new Date(
+                  activity.locations[0].timestamp
+                ).toUTCString()}
+              />
+              <Card.Content
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Title style={{}}>{activity.id}</Title>
+                <Title>{activity.distance} km</Title>
+              </Card.Content>
+            </Card>
+          ))
+        ) : null}
       </View>
-      <Fab onPress={() => navigation.push("Run", { screen: "Countdown" })} />
+      <Fab navigation={navigation} />
     </View>
   );
 };

@@ -177,7 +177,7 @@ const RunningScreen = ({ navigation }) => {
       </View>
       <BottomSheet
         ref={sheetRef}
-        snapPoints={[250, 100]}
+        snapPoints={[200, 100]}
         borderRadius={24}
         renderContent={renderContent}
       />
