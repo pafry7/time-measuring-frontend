@@ -44,8 +44,11 @@ const ChooseActivity = ({ navigation }) => {
           justifyContent: "center",
         }}
       >
-        {activities.map((activity) => (
-          <TouchableOpacity onPress={() => navigation.push("Countdown")}>
+        {activities.map((activity, index) => (
+          <TouchableOpacity
+            onPress={() => navigation.push("ChooseContest")}
+            key={index}
+          >
             <Card
               elevation={1}
               style={{

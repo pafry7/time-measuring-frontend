@@ -1,15 +1,15 @@
 import * as React from "react";
 import { Fab } from "../components/Fab";
 import { StyleSheet, View, Dimensions, ActivityIndicator } from "react-native";
-import { Headline, Card, Title } from "react-native-paper";
+import { Headline, Card, Title, Text } from "react-native-paper";
 import { useAuth } from "../context/auth-context";
 import { client } from "../utils/client";
+import { format } from "date-fns";
 
 const Activities = ({ navigation }) => {
   const [data, setData] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const { user } = useAuth();
-  console.log(loading);
 
   const { width } = Dimensions.get("window");
 
@@ -17,18 +17,33 @@ const Activities = ({ navigation }) => {
     setLoading(true);
     const fetchFunction = async () => {
       console.log(user.id, "userid");
-      const data = await client(`users/${user.id}/approaches`);
-      console.log(data);
-      setData(data);
+      const data = await client(
+        `query ($id: String) {
+  users(where: {id: {_eq: $id}}) {
+    activities {
+      locations
+      id
+      distance
+      created_at
+      challenge {
+        name
+      }
+    }
+  }
+}
+`,
+        { id: user.id }
+      );
+      setData(data.data.users[0].activities);
+      setLoading(false);
     };
     try {
       fetchFunction();
     } catch (e) {
       console.error("error", e);
     } finally {
-      setLoading(false);
     }
-  }, []);
+  }, [user.id]);
 
   return (
     <View style={styles.container}>
@@ -41,14 +56,16 @@ const Activities = ({ navigation }) => {
         ) : data ? (
           data.map((activity) => (
             <Card
-              elevation={1}
+              key={activity.id}
+              elevation={3}
               style={{ marginBottom: 16, width: 0.9 * width }}
             >
               <Card.Title
                 title="Bieg"
-                subtitle={new Date(
-                  activity.locations[0].timestamp
-                ).toUTCString()}
+                subtitle={format(
+                  new Date(activity.created_at),
+                  "dd.MM.yyyy HH:mm"
+                )}
               />
               <Card.Content
                 style={{
@@ -56,7 +73,7 @@ const Activities = ({ navigation }) => {
                   justifyContent: "space-between",
                 }}
               >
-                <Title style={{}}>{activity.id}</Title>
+                <Text>Zawody: {activity.challenge.name}</Text>
                 <Title>{activity.distance} km</Title>
               </Card.Content>
             </Card>

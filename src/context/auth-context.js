@@ -32,9 +32,24 @@ function AuthProvider(props) {
 
   const register = React.useCallback(
     (mail) =>
-      client("hello", { body: { mail } }).then(async (user) => {
-        await SecureStore.setItemAsync("userData", JSON.stringify(user));
-        setUser(user);
+      client(
+        `query($mail: String){
+  users(where: {mail: {_eq: $mail}}) {
+    id
+		name
+    mail,
+    surname,
+    trust
+  }
+}
+`,
+        { mail }
+      ).then(async (user) => {
+        await SecureStore.setItemAsync(
+          "userData",
+          JSON.stringify(user.data.users[0])
+        );
+        setUser(user.data.users[0]);
       }),
     [setUser]
   );

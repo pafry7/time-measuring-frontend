@@ -2,6 +2,7 @@ import * as React from "react";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
 import { Fab } from "../components/Fab";
 import Carousel from "react-native-snap-carousel";
+import { format } from "date-fns";
 import { Headline, Card, Title, ActivityIndicator } from "react-native-paper";
 import { useAuth } from "../context/auth-context";
 import { client } from "../utils/client";
@@ -9,74 +10,63 @@ import { client } from "../utils/client";
 const Menu = ({ navigation }) => {
   const [index, setIndex] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
-  const [data, setData] = React.useState(2);
+  const [data, setData] = React.useState([]);
   const { user } = useAuth();
 
-  // React.useEffect(() => {
-  //   setLoading(true);
-  //   const fetchFunction = async () => {
-  //     console.log(user.id, "userid");
-  //     const data = await client(`users/${user.id}/challenges`);
-  //     console.log(data);
-  //     setData(data);
-  //   };
-  //   try {
-  //     fetchFunction();
-  //   } catch (e) {
-  //     console.error("error", e);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, []);
+  const colors = ["teal", "orange", "green", "pink"];
 
-  console.log(index);
-  const [items, setItems] = React.useState([
-    {
-      title: "Item 1",
-      text: "Text 1",
-      color: "red",
-    },
-    {
-      title: "Item 2",
-      text: "Text 2",
-      color: "blue",
-    },
-    {
-      title: "Item 3",
-      text: "Text 3",
-      color: "white",
-    },
-    {
-      title: "Item 4",
-      text: "Text 4",
-      color: "green",
-    },
-    {
-      title: "Item 5",
-      text: "Text 5",
-      color: "pink",
-    },
-  ]);
+  React.useEffect(() => {
+    setLoading(true);
+    const fetchFunction = async () => {
+      console.log(user.id, "userid");
+      const data = await client(
+        `query MyQuery2 {
+  challenges {
+    id
+    name
+    end_time
+    prize
+    start_time
+    type
+  }
+}
+`,
+        {}
+      );
+      setData(data.data.challenges);
+      setLoading(false);
+    };
+    try {
+      fetchFunction();
+    } catch (e) {
+      console.error("error", e);
+    }
+  }, [user.id]);
 
   const carouselRef = React.createRef();
-
-  const { height, width } = Dimensions.get("window");
 
   const renderItem = ({ item, index }) => {
     return (
       <Card
-        elevation={5}
+        elevation={4}
         style={{
-          backgroundColor: item.color,
+          backgroundColor: colors[index],
           borderRadius: 12,
           height: 200,
           width: 175,
-          padding: 50,
+          padding: 8,
           marginLeft: 8,
           marginRight: 8,
         }}
       >
-        <Text>{item.title}</Text>
+        <Text>{item.name}</Text>
+        <Text>
+          Czas trwania:{format(new Date(item.start_time), "dd.MM.yyyy HH:mm")}
+        </Text>
+        <View style={{ width: 150 }}>
+          <Text>Typ: {item.type}</Text>
+          <Text>Nagroda: {item.prize}</Text>
+        </View>
       </Card>
     );
   };
@@ -100,8 +90,8 @@ const Menu = ({ navigation }) => {
           <Carousel
             layout={"default"}
             ref={carouselRef}
-            data={items}
-            firstItem={2}
+            data={data}
+            firstItem={1}
             sliderWidth={400}
             itemWidth={175}
             renderItem={renderItem}
@@ -109,7 +99,7 @@ const Menu = ({ navigation }) => {
           />
         </View>
       ) : null}
-      <View
+      {/* <View
         style={{
           marginTop: 80,
           justifyContent: "center",
@@ -118,7 +108,7 @@ const Menu = ({ navigation }) => {
         }}
       >
         <Headline>Statystyki</Headline>
-      </View>
+      </View> */}
       <Fab navigation={navigation} />
     </View>
   );

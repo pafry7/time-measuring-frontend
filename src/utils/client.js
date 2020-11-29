@@ -1,27 +1,17 @@
-const API_URL =
-  "https://us-central1-timemeasuring-b8740.cloudfunctions.net/app";
+const API_URL = "https://totalizator.hasura.app/v1/graphql";
 
-async function client(endpoint, { body, ...customConfig } = {}) {
-  console.log("body", body);
-
-  const headers = { "content-type": "application/json" };
+async function client(query, variables) {
+  console.log(variables);
   const config = {
-    method: body ? "POST" : "GET",
-    ...customConfig,
+    method: "POST",
+    body: JSON.stringify({ query, variables }),
     headers: {
-      ...headers,
-      ...customConfig.headers,
+      "Content-Type": "application/json",
     },
   };
 
-  if (body) {
-    config.body = JSON.stringify(body);
-  }
-
-  return fetch(`${API_URL}/${endpoint}`, config).then(async (response) => {
+  return fetch(API_URL, config).then(async (response) => {
     const data = await response.json();
-    console.log(data, "data client");
-
     if (response.ok) {
       return data;
     } else {

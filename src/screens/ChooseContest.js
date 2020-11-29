@@ -8,11 +8,13 @@ import {
   Title,
   Content,
   ActivityIndicator,
+  Text,
 } from "react-native-paper";
 import { client } from "../utils/client";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { format } from "date-fns";
 
-const Contests = ({ navigation }) => {
+const ChooseContest = ({ navigation }) => {
   const [data, setData] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const { user } = useAuth();
@@ -38,7 +40,6 @@ const Contests = ({ navigation }) => {
         { id: user.id }
       );
       setData(data.data.users[0].challenges);
-      console.log("challanges", data);
       setLoading(false);
     };
     try {
@@ -52,7 +53,7 @@ const Contests = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={{ height: 150, justifyContent: "center", marginLeft: 16 }}>
-        <Headline>Moje zawody</Headline>
+        <Headline>Wybierz zawody</Headline>
       </View>
       <View style={{ alignItems: "center" }}>
         {loading ? (
@@ -60,30 +61,35 @@ const Contests = ({ navigation }) => {
         ) : data ? (
           data.map((zaw) => (
             <Card
-              key={zaw.id}
               elevation={3}
+              key={zaw.id}
               style={{ marginBottom: 16, width: 0.9 * width }}
+              onPress={() =>
+                navigation.push("Countdown", { contestId: zaw.id })
+              }
             >
-              <Card.Title
-                title={zaw.name}
-                subtitle={`${format(
-                  new Date(zaw.start_time),
-                  "dd.MM.yyyy HH:mm"
-                )}-${format(new Date(zaw.end_time), "dd.MM.yyyy HH:mm")}`}
-              />
-              <Card.Content
+              <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
+                  alignItems: "center",
+                  height: 50,
                 }}
               >
-                <Title style={{}}>Typ: {zaw.type}</Title>
-              </Card.Content>
+                <Title style={{ marginLeft: 8 }}>
+                  {zaw.name ? zaw.name : "Nie wiadomo"}
+                </Title>
+                <MaterialCommunityIcons
+                  style={{ marginRight: 8 }}
+                  name="chevron-right"
+                  size={24}
+                  color="purple"
+                />
+              </View>
             </Card>
           ))
         ) : null}
       </View>
-      <Fab navigation={navigation} />
     </View>
   );
 };
@@ -91,7 +97,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    alignItems: "center",
   },
 });
 
-export { Contests };
+export { ChooseContest };

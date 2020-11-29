@@ -9,6 +9,15 @@ const LocationProvider = (props) => {
   const [error, setError] = React.useState(null);
   console.log("I am in location provider", currentLocation);
 
+  const subscribe = async (callback) => {
+    const options = {
+      accuracy: Location.Accuracy.High,
+      timeInterval: 10000,
+    };
+    const remove = await Location.watchPositionAsync(options, callback);
+    return remove;
+  };
+
   useEffect(() => {
     const fetchUserLocation = async () => {
       const { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -28,7 +37,10 @@ const LocationProvider = (props) => {
     fetchUserLocation();
   }, []);
   return (
-    <LocationContext.Provider value={{ error, currentLocation }} {...props} />
+    <LocationContext.Provider
+      value={{ error, currentLocation, subscribe }}
+      {...props}
+    />
   );
 };
 

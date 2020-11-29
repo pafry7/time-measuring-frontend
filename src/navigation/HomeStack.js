@@ -10,6 +10,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { Countdown } from "../screens/Countdown";
 import { RunSummary } from "../screens/RunSummary";
 import { RunningScreen } from "../screens/RunningScreen";
+import { ChooseContest } from "../screens/ChooseContest";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -53,6 +54,7 @@ const HomeStack = () => {
     <Stack.Navigator headerMode={null}>
       <Stack.Screen name="Home" component={HomeTabs} />
       <Stack.Screen name="ChooseActivity" component={ChooseActivity} />
+      <Stack.Screen name="ChooseContest" component={ChooseContest} />
       <Stack.Screen name="Countdown" component={Countdown} />
       <Stack.Screen name="RunningScreen" component={RunningScreen} />
       <Stack.Screen name="RunSummary" component={RunSummary} />

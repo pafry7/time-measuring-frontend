@@ -1,40 +1,99 @@
 import * as React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-
+import { Modal, Portal, Provider } from "react-native-paper";
 import BottomSheet from "reanimated-bottom-sheet";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import MapView from "react-native-maps";
+import MapView, { Polyline } from "react-native-maps";
 import { Headline, Button, Title } from "react-native-paper";
 import { useLocation } from "../context/location-context";
+import { client } from "../utils/requests";
+import { formatISO } from "date-fns";
 
-const RunningScreen = ({ navigation }) => {
+const RunningScreen = ({ navigation, route }) => {
+  const [visible, setVisible] = React.useState(false);
+
+  const { currentLocation, subscribe } = useLocation();
   const [seconds, setSeconds] = React.useState(0);
+  const [test, setTest] = React.useState(null);
+  const [locations, setLocations] = React.useState([]);
+  // console.log(locations);
   const [region, setRegion] = React.useState({
-    latitude: 50.071904,
-    longitude: 19.941856,
+    latitude: 50,
+    longitude: 19,
   });
-  const { currentLocation } = useLocation();
+  const { activityId } = route.params;
+  const mapRef = React.createRef();
+
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+  const containerStyle = {
+    backgroundColor: "white",
+    padding: 20,
+    width: "50%",
+    height: "20%",
+    marginLeft: 90,
+  };
+
+  const callback = async (data) => {
+    const { latitude, longitude } = data.coords;
+    console.log(latitude, longitude);
+    setRegion({ latitude, longitude });
+    setLocations((loc) => [...loc, { latitude, longitude }]);
+    console.log(locations);
+
+    try {
+      // const response = await client(`activities/${activityId}/location`, {
+      //   body: {
+      //     latitude: latitude,
+      //     longitude: longitude,
+      //     timestamp: formatISO(new Date()),
+      //   },
+      // });
+      // console.log(response);
+    } catch (e) {
+      // console.log("errorrr", e);
+    }
+  };
+  React.useEffect(() => {
+    let object;
+    const wrap = async () => {
+      object = await subscribe(callback);
+      try {
+        // const response = await client(`activities/${activityId}/location`, {
+        //   body: {
+        //     latitude: currentLocation.latitude,
+        //     longitude: currentLocation.longitude,
+        //     timestamp: formatISO(new Date()),
+        //   },
+        // });
+        // console.log(response);
+      } catch (err) {
+        console.error(err);
+      }
+      setTest(object);
+    };
+    wrap();
+  }, [activityId]);
 
   const { height, width } = Dimensions.get("window");
   const latitude_delta = 0.005;
 
-  const mapRef = React.createRef();
   const longitude_delta = latitude_delta * (width / height);
-  React.useEffect(() => {
-    console.log(region, "pos");
-    if (currentLocation) {
-      setRegion({
-        latitude: currentLocation.latitude,
-        longitude: currentLocation.longitude,
-      });
-      mapRef.current.animateToRegion({
-        latitude: currentLocation.latitude,
-        longitude: currentLocation.longitude,
-        latitudeDelta: 0.005,
-        longitudeDelta: latitude_delta * (width / height),
-      });
-    }
-  }, [currentLocation]);
+  // React.useEffect(() => {
+  //   console.log(region, "pos");
+  //   if (region && mapRef.current) {
+  //     // setRegion({
+  //     //   latitude: currentLocation.latitude,
+  //     //   longitude: currentLocation.longitude,
+  //     // });
+  //     mapRef.current.animateToRegion({
+  //       latitude: region.latitude,
+  //       longitude: region.longitude,
+  //       latitudeDelta: 0.005,
+  //       longitudeDelta: latitude_delta * (width / height),
+  //     });
+  //   };
+  // }, [region])
 
   function secondsToString(seconds) {
     const hours = Math.floor(seconds / 3600);
@@ -89,7 +148,6 @@ const RunningScreen = ({ navigation }) => {
               width: seconds < 60 ? 50 : 80,
               paddingTop: 20,
               marginRight: 4,
-              borderWidth: 1,
             }}
           >
             {secondsToString(seconds)}
@@ -116,7 +174,7 @@ const RunningScreen = ({ navigation }) => {
             size={32}
             style={{ paddingTop: 10, marginRight: 8 }}
           />
-          <Headline style={{ fontSize: 36, paddingTop: 20 }}>23 km</Headline>
+          <Headline style={{ fontSize: 36, paddingTop: 20 }}>1 km</Headline>
         </View>
       </View>
       <View
@@ -124,30 +182,24 @@ const RunningScreen = ({ navigation }) => {
           height: 125,
           marginTop: 30,
           flexDirection: "row",
-          justifyContent: "space-between",
+          justifyContent: "flex-end",
           alignItems: "center",
         }}
       >
-        <View>
-          {/* <MaterialCommunityIcons
-            name="speedometer"
-            size={36}
-            color="orange"
-            style={{ marginBottom: 4 }}
-          /> */}
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              paddingLeft: 50,
-            }}
-          >
-            <Text style={{ marginBottom: 2, fontSize: 18 }}>23</Text>
-            <Text style={{ color: "gray" }}>km/h</Text>
-          </View>
-        </View>
         <Button
-          onPress={() => navigation.push("RunSummary")}
+          onPress={async () => {
+            showModal();
+            // test.remove();
+            // try {
+            //   const response = await client(`activities/${activityId}/final`, {
+            //     body: { test: "body" },
+            //   });
+            //   console.log(response);
+            // } catch (e) {
+            //   console.error(e);
+            // }
+            navigation.push("RunSummary", { activityId });
+          }}
           mode="contained"
           color="red"
           contentStyle={{ height: 50 }}
@@ -181,6 +233,23 @@ const RunningScreen = ({ navigation }) => {
         borderRadius={24}
         renderContent={renderContent}
       />
+      <Provider>
+        <Portal>
+          <Modal
+            visible={visible}
+            onDismiss={hideModal}
+            contentContainerStyle={containerStyle}
+          >
+            <Text>Jeteś obok punktu orientacyjnego! Zrób selfie!</Text>
+            <Button style={{ marginBottom: 8 }} mode="contained">
+              Aparat
+            </Button>
+          </Modal>
+        </Portal>
+        {/* <Button style={{ marginTop: 30 }} onPress={showModal}>
+          Show
+        </Button> */}
+      </Provider>
     </>
   );
 };
