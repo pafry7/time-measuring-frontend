@@ -1,5 +1,6 @@
 import * as React from "react";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   Button,
   useTheme,
@@ -18,96 +19,9 @@ const RunSummary = ({ navigation, route }) => {
   });
   const { height, width } = Dimensions.get("window");
 
-  const locations = [
-    {
-      latitude: 49.99994424,
-      longitude: 19.85303718,
-    },
-    {
-      latitude: 50.0127486,
-      longitude: 19.8809946,
-    },
-    {
-      latitude: 50.00034582,
-      longitude: 19.8528092,
-    },
-    {
-      latitude: 50.0127494,
-      longitude: 19.8810024,
-    },
-    {
-      latitude: 50.00075801,
-      longitude: 19.85259035,
-    },
-    {
-      latitude: 50.00120104,
-      longitude: 19.85240343,
-    },
-    {
-      latitude: 50.01276,
-      longitude: 19.8809991,
-    },
-    {
-      latitude: 50.00153892,
-      longitude: 19.85230706,
-    },
-    {
-      latitude: 50.00160681,
-      longitude: 19.8522877,
-    },
-    {
-      latitude: 50.0127639,
-      longitude: 19.8809999,
-    },
-    {
-      latitude: 50.0127697,
-      longitude: 19.8809989,
-    },
-    {
-      latitude: 50.00186088,
-      longitude: 19.85222435,
-    },
-    {
-      latitude: 50.00192049,
-      longitude: 19.85221208,
-    },
-    {
-      latitude: 50.00199563,
-      longitude: 19.85219661,
-    },
-    {
-      latitude: 50.00204516,
-      longitude: 19.85218641,
-    },
-    {
-      latitude: 50.0127685,
-      longitude: 19.8809856,
-    },
-    {
-      latitude: 50.0127685,
-      longitude: 19.8809856,
-    },
-    {
-      latitude: 50.0127667,
-      longitude: 19.8809973,
-    },
-    {
-      latitude: 50.0127667,
-      longitude: 19.8809973,
-    },
-    {
-      latitude: 50.00225548,
-      longitude: 19.85213698,
-    },
-    {
-      latitude: 50.00225548,
-      longitude: 19.85213698,
-    },
-  ];
-
   const latitude_delta = 0.01;
   const longitude_delta = latitude_delta * (width / height);
-  const { activityId } = route.params;
+  const { activityId, seconds, distance } = route.params;
   React.useEffect(() => {
     setLoading(true);
     const fetchFunction = async () => {
@@ -123,7 +37,7 @@ const RunSummary = ({ navigation, route }) => {
         { id: activityId }
       );
       // setData(data.data.users[0].activities);
-      console.log(data);
+      console.log("info about recent activity", data);
       setLoading(false);
     };
     try {
@@ -133,6 +47,17 @@ const RunSummary = ({ navigation, route }) => {
     } finally {
     }
   }, [activityId]);
+  function secondsToString(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secondsLeft = Math.floor((seconds % 3600) % 60);
+
+    const hoursDisplay = hours > 0 ? `${hours}:` : "";
+    const minutesDisplay = minutes > 0 ? `${minutes}:` : "";
+    const secondsDisplay = secondsLeft < 10 ? `0${secondsLeft}` : secondsLeft;
+
+    return `${hoursDisplay}${minutesDisplay}${secondsDisplay}`;
+  }
   const mapRef = React.useRef();
   return (
     <View style={styles.container}>
@@ -166,15 +91,34 @@ const RunSummary = ({ navigation, route }) => {
           ></MapView>
           <View
             style={{
-              alignItems: "center",
-              justifyContent: "center",
-              width: 80,
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              width: 300,
               marginBottom: 20,
               marginTop: 30,
             }}
           >
-            <Text>Dystans: 20km</Text>
-            <Text>Czas: 2:05 h</Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialCommunityIcons
+                name="clock-outline"
+                size={24}
+                color="black"
+              />
+              <Headline style={{ marginLeft: 8 }}>
+                Czas: {secondsToString(seconds)}
+                {seconds < 60 ? "s" : "min"}
+              </Headline>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialCommunityIcons
+                name="chart-timeline-variant"
+                size={24}
+                color="black"
+              />
+              <Headline style={{ marginLeft: 8 }}>
+                Dystans: {distance.toFixed(2)} km
+              </Headline>
+            </View>
           </View>
           <Button
             mode="contained"

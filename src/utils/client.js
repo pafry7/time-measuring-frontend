@@ -1,7 +1,6 @@
 const API_URL = "https://totalizator.hasura.app/v1/graphql";
 
 async function client(query, variables) {
-  console.log(variables);
   const config = {
     method: "POST",
     body: JSON.stringify({ query, variables }),

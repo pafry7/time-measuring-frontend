@@ -9,12 +9,14 @@ const Countdown = ({ route, navigation }) => {
   const { user } = useAuth();
   const { colors } = useTheme();
   const { contestId } = route.params;
-  console.log(user.id, contestId);
 
   //for now
   React.useEffect(() => {
-    LogBox.ignoreLogs(["Animated: `useNativeDriver`"]);
-  }, []);
+    LogBox.ignoreLogs([
+      "Animated: `useNativeDriver`",
+      "componentWillReceiveProps has been renamed",
+    ]);
+  }, [contestId]);
 
   return (
     <View style={styles.container}>

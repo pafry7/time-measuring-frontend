@@ -4,10 +4,7 @@ import { TouchableOpacity } from "react-native";
 
 const ProfileButton = ({ style, hidden }) => {
   const { colors } = useTheme();
-  console.log("profile button renders");
-  const onPress = () => {
-    console.log("xD");
-  };
+  const onPress = () => {};
 
   if (hidden) {
     return null;

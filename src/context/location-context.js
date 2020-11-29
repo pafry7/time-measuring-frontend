@@ -7,16 +7,7 @@ const LocationContext = React.createContext();
 const LocationProvider = (props) => {
   const [currentLocation, setCurrentLocation] = React.useState(null);
   const [error, setError] = React.useState(null);
-  console.log("I am in location provider", currentLocation);
-
-  const subscribe = async (callback) => {
-    const options = {
-      accuracy: Location.Accuracy.High,
-      timeInterval: 10000,
-    };
-    const remove = await Location.watchPositionAsync(options, callback);
-    return remove;
-  };
+  console.log(currentLocation);
 
   useEffect(() => {
     const fetchUserLocation = async () => {
@@ -37,10 +28,7 @@ const LocationProvider = (props) => {
     fetchUserLocation();
   }, []);
   return (
-    <LocationContext.Provider
-      value={{ error, currentLocation, subscribe }}
-      {...props}
-    />
+    <LocationContext.Provider value={{ error, currentLocation }} {...props} />
   );
 };
 

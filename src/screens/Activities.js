@@ -1,6 +1,12 @@
 import * as React from "react";
 import { Fab } from "../components/Fab";
-import { StyleSheet, View, Dimensions, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  ActivityIndicator,
+  FlatList,
+} from "react-native";
 import { Headline, Card, Title, Text } from "react-native-paper";
 import { useAuth } from "../context/auth-context";
 import { client } from "../utils/client";
@@ -16,7 +22,6 @@ const Activities = ({ navigation }) => {
   React.useEffect(() => {
     setLoading(true);
     const fetchFunction = async () => {
-      console.log(user.id, "userid");
       const data = await client(
         `query ($id: String) {
   users(where: {id: {_eq: $id}}) {
@@ -45,6 +50,30 @@ const Activities = ({ navigation }) => {
     }
   }, [user.id]);
 
+  const renderItem = ({ item }) => {
+    return (
+      <Card
+        key={item.id}
+        elevation={3}
+        style={{ marginBottom: 16, width: 0.9 * width }}
+      >
+        <Card.Title
+          title="Bieg"
+          subtitle={format(new Date(item.created_at), "dd.MM.yyyy HH:mm")}
+        />
+        <Card.Content
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text>Zawody: {item.challenge.name}</Text>
+          <Title>{item.distance ? item.distance.toFixed(2) : 0} km</Title>
+        </Card.Content>
+      </Card>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={{ height: 150, justifyContent: "center", marginLeft: 16 }}>
@@ -54,30 +83,11 @@ const Activities = ({ navigation }) => {
         {loading ? (
           <ActivityIndicator />
         ) : data ? (
-          data.map((activity) => (
-            <Card
-              key={activity.id}
-              elevation={3}
-              style={{ marginBottom: 16, width: 0.9 * width }}
-            >
-              <Card.Title
-                title="Bieg"
-                subtitle={format(
-                  new Date(activity.created_at),
-                  "dd.MM.yyyy HH:mm"
-                )}
-              />
-              <Card.Content
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text>Zawody: {activity.challenge.name}</Text>
-                <Title>{activity.distance} km</Title>
-              </Card.Content>
-            </Card>
-          ))
+          <FlatList
+            data={data}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+          />
         ) : null}
       </View>
       <Fab navigation={navigation} />

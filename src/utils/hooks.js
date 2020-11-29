@@ -12,7 +12,6 @@ const useAsync = (asyncFunction, immediate = true) => {
 
     return asyncFunction()
       .then((response) => {
-        console.log("response in async", response);
         setValue(response);
         setStatus("success");
       })

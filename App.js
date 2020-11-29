@@ -9,14 +9,12 @@ import { theme } from "./src/common/theme";
 import { LocationProvider } from "./src/context/location-context.js";
 
 export default function App() {
-  console.log("in app");
   const [loaded] = useFonts({
     "SFProDisplay-Bold": require("./assets/fonts/SF-Pro-Display-Bold.otf"),
     "SFProDisplay-Semibold": require("./assets/fonts/SF-Pro-Display-Semibold.otf"),
     "SFProDisplay-Regular": require("./assets/fonts/SF-Pro-Display-Regular.otf"),
     "SFProDisplay-Medium": require("./assets/fonts/SF-Pro-Display-Medium.otf"),
   });
-  console.log("loaded", loaded);
 
   if (!loaded) {
     return <AppLoading />;

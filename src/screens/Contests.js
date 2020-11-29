@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Dimensions, FlatList, StyleSheet, View } from "react-native";
 import { Fab } from "../components/Fab";
 import { useAuth } from "../context/auth-context";
 import {
@@ -38,7 +38,6 @@ const Contests = ({ navigation }) => {
         { id: user.id }
       );
       setData(data.data.users[0].challenges);
-      console.log("challanges", data);
       setLoading(false);
     };
     try {
@@ -47,6 +46,31 @@ const Contests = ({ navigation }) => {
       console.log(e, "error");
     }
   }, [user]);
+  const renderItem = ({ item }) => {
+    return (
+      <Card
+        key={item.id}
+        elevation={3}
+        style={{ marginBottom: 16, width: 0.9 * width }}
+      >
+        <Card.Title
+          title={item.name}
+          subtitle={`${format(
+            new Date(item.start_time),
+            "dd.MM.yyyy HH:mm"
+          )}-${format(new Date(item.end_time), "dd.MM.yyyy HH:mm")}`}
+        />
+        <Card.Content
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Title style={{}}>Typ: {item.type}</Title>
+        </Card.Content>
+      </Card>
+    );
+  };
 
   const { height, width } = Dimensions.get("window");
   return (
@@ -58,29 +82,11 @@ const Contests = ({ navigation }) => {
         {loading ? (
           <ActivityIndicator />
         ) : data ? (
-          data.map((zaw) => (
-            <Card
-              key={zaw.id}
-              elevation={3}
-              style={{ marginBottom: 16, width: 0.9 * width }}
-            >
-              <Card.Title
-                title={zaw.name}
-                subtitle={`${format(
-                  new Date(zaw.start_time),
-                  "dd.MM.yyyy HH:mm"
-                )}-${format(new Date(zaw.end_time), "dd.MM.yyyy HH:mm")}`}
-              />
-              <Card.Content
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Title style={{}}>Typ: {zaw.type}</Title>
-              </Card.Content>
-            </Card>
-          ))
+          <FlatList
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            data={data}
+          />
         ) : null}
       </View>
       <Fab navigation={navigation} />

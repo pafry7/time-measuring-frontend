@@ -15,7 +15,7 @@ export default function MyCamera(activity_id, landmark_id) {
     id
   }`,
     { activity_id, landmark_id, photo });
-    console.log(data);
+    console.log(data, "data");
   };
 
   const cameraRef = React.createRef();

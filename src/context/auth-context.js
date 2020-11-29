@@ -10,7 +10,6 @@ const AuthContext = React.createContext();
 function AuthProvider(props) {
   const [user, setUser] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
-  console.log("in auth provider", user, isLoading);
 
   async function bootstrapAppData() {
     try {
@@ -20,7 +19,6 @@ function AuthProvider(props) {
         const user = await JSON.parse(userData);
         setUser(user);
       }
-      console.log(userData);
       setIsLoading(false);
     } catch (e) {
       console.log("error", e);

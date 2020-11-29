@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
+import * as Location from "expo-location";
 import { Modal, Portal, Provider } from "react-native-paper";
 import BottomSheet from "reanimated-bottom-sheet";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -10,17 +11,14 @@ import { client } from "../utils/requests";
 import { formatISO } from "date-fns";
 
 const RunningScreen = ({ navigation, route }) => {
+  const { currentLocation, subscribe } = useLocation();
+  const [region, setRegion] = React.useState(null);
+  const [locations, setLocations] = React.useState([]);
+  const [seconds, setSeconds] = React.useState(0);
+  const [distance, setDistance] = React.useState(0);
+  const [test, setTest] = React.useState(null);
   const [visible, setVisible] = React.useState(false);
 
-  const { currentLocation, subscribe } = useLocation();
-  const [seconds, setSeconds] = React.useState(0);
-  const [test, setTest] = React.useState(null);
-  const [locations, setLocations] = React.useState([]);
-  // console.log(locations);
-  const [region, setRegion] = React.useState({
-    latitude: 50,
-    longitude: 19,
-  });
   const { activityId } = route.params;
   const mapRef = React.createRef();
 
@@ -39,61 +37,78 @@ const RunningScreen = ({ navigation, route }) => {
     console.log(latitude, longitude);
     setRegion({ latitude, longitude });
     setLocations((loc) => [...loc, { latitude, longitude }]);
-    console.log(locations);
-
     try {
-      // const response = await client(`activities/${activityId}/location`, {
-      //   body: {
-      //     latitude: latitude,
-      //     longitude: longitude,
-      //     timestamp: formatISO(new Date()),
-      //   },
-      // });
-      // console.log(response);
+      const response = await client(`activities/${activityId}/location`, {
+        body: {
+          latitude: latitude,
+          longitude: longitude,
+          timestamp: formatISO(new Date()),
+        },
+      });
+      console.log("post locations to activity response", response);
+      if (response.expect_photo) {
+        showModal();
+      }
     } catch (e) {
-      // console.log("errorrr", e);
+      console.log("errorrr", e);
     }
   };
   React.useEffect(() => {
-    let object;
     const wrap = async () => {
-      object = await subscribe(callback);
-      try {
-        // const response = await client(`activities/${activityId}/location`, {
-        //   body: {
-        //     latitude: currentLocation.latitude,
-        //     longitude: currentLocation.longitude,
-        //     timestamp: formatISO(new Date()),
-        //   },
-        // });
-        // console.log(response);
-      } catch (err) {
-        console.error(err);
-      }
-      setTest(object);
+      const options = {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 5000,
+      };
+      const location = await Location.watchPositionAsync(options, callback);
+      setTest(location);
     };
     wrap();
+
+    if (test) {
+      return test.remove;
+    }
   }, [activityId]);
+  React.useEffect(() => {
+    let distance = 0;
+    let recentParams = {
+      latitude: locations[0] && locations[0].latitude,
+      longitude: locations[0] && locations[0].longitude,
+    };
+    const KmInDegree = 111;
+
+    for (const location of locations) {
+      const step = Math.sqrt(
+        Math.pow(
+          Math.abs(location.latitude - recentParams.latitude) * KmInDegree,
+          2
+        ) +
+          Math.pow(
+            Math.abs(location.longitude - recentParams.longitude) * KmInDegree,
+            2
+          )
+      );
+      recentParams = {
+        ...location,
+      };
+      distance += step;
+    }
+    setDistance(distance);
+  }, [locations]);
 
   const { height, width } = Dimensions.get("window");
   const latitude_delta = 0.005;
-
   const longitude_delta = latitude_delta * (width / height);
-  // React.useEffect(() => {
-  //   console.log(region, "pos");
-  //   if (region && mapRef.current) {
-  //     // setRegion({
-  //     //   latitude: currentLocation.latitude,
-  //     //   longitude: currentLocation.longitude,
-  //     // });
-  //     mapRef.current.animateToRegion({
-  //       latitude: region.latitude,
-  //       longitude: region.longitude,
-  //       latitudeDelta: 0.005,
-  //       longitudeDelta: latitude_delta * (width / height),
-  //     });
-  //   };
-  // }, [region])
+  React.useEffect(() => {
+    console.log(region, "pos");
+    if (region) {
+      mapRef.current.animateToRegion({
+        latitude: region.latitude,
+        longitude: region.longitude,
+        latitudeDelta: 0.005,
+        longitudeDelta: latitude_delta * (width / height),
+      });
+    }
+  }, [region]);
 
   function secondsToString(seconds) {
     const hours = Math.floor(seconds / 3600);
@@ -174,7 +189,9 @@ const RunningScreen = ({ navigation, route }) => {
             size={32}
             style={{ paddingTop: 10, marginRight: 8 }}
           />
-          <Headline style={{ fontSize: 36, paddingTop: 20 }}>1 km</Headline>
+          <Headline style={{ fontSize: 36, paddingTop: 20 }}>
+            {distance.toFixed(2)} km
+          </Headline>
         </View>
       </View>
       <View
@@ -188,17 +205,18 @@ const RunningScreen = ({ navigation, route }) => {
       >
         <Button
           onPress={async () => {
-            showModal();
-            // test.remove();
-            // try {
-            //   const response = await client(`activities/${activityId}/final`, {
-            //     body: { test: "body" },
-            //   });
-            //   console.log(response);
-            // } catch (e) {
-            //   console.error(e);
-            // }
-            navigation.push("RunSummary", { activityId });
+            await test.remove();
+
+            const URL =
+              "https://us-central1-timemeasuring-b8740.cloudfunctions.net/app";
+            try {
+              await fetch(`${URL}/activities/${activityId}/final`, {
+                method: "POST",
+              });
+            } catch (e) {
+              console.error(e, "here");
+            }
+            navigation.push("RunSummary", { activityId, distance, seconds });
           }}
           mode="contained"
           color="red"
@@ -220,8 +238,8 @@ const RunningScreen = ({ navigation, route }) => {
           showsUserLocation
           style={styles.mapStyle}
           initialRegion={{
-            latitude: region.latitude,
-            longitude: region.longitude,
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
             latitudeDelta: latitude_delta,
             longitudeDelta: longitude_delta,
           }}
@@ -246,9 +264,6 @@ const RunningScreen = ({ navigation, route }) => {
             </Button>
           </Modal>
         </Portal>
-        {/* <Button style={{ marginTop: 30 }} onPress={showModal}>
-          Show
-        </Button> */}
       </Provider>
     </>
   );

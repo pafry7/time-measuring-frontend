@@ -20,7 +20,6 @@ const Register = () => {
     }
   };
 
-  console.log("user in register", user);
   return (
     <DismissKeyboard>
       <View style={styles.container}>

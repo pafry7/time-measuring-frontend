@@ -13,12 +13,11 @@ const Menu = ({ navigation }) => {
   const [data, setData] = React.useState([]);
   const { user } = useAuth();
 
-  const colors = ["teal", "orange", "green", "pink"];
+  const colors = ["teal", "orange", "green", "pink", ""];
 
   React.useEffect(() => {
     setLoading(true);
     const fetchFunction = async () => {
-      console.log(user.id, "userid");
       const data = await client(
         `query MyQuery2 {
   challenges {
